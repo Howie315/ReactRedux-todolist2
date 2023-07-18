@@ -1,26 +1,31 @@
-import React, { useState } from "react";
-import { useAppDispatch } from "./store/store";
-import { addTodo } from "./store/todoSlice";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { Container, AppBar, Toolbar, Button } from "@mui/material";
 import TodoList from "./components/TodoList";
-import { TextField, Button } from "@mui/material";
-import "./App.css";
+import About from "./components/About";
 
-const App: React.FC = () => {
-	const [newTodoText, setNewTodoText] = useState("");
-	const dispatch = useAppDispatch();
-
-	const handleAddTodo = () => {
-		if (newTodoText.trim() !== "") {
-			dispatch(addTodo(newTodoText));
-			setNewTodoText("");
-		}
-	};
-
+function App() {
 	return (
-		<div>
-			<TodoList />
-		</div>
+		<Router>
+			<AppBar position="static">
+				<Toolbar>
+					<Button color="inherit" component={Link} to="/">
+						Todo List
+					</Button>
+					<Button color="inherit" component={Link} to="/about">
+						About
+					</Button>
+				</Toolbar>
+			</AppBar>
+
+			<Container maxWidth="sm">
+				<Routes>
+					<Route path="/" element={<TodoList />} />
+					<Route path="/about" element={<About />} />
+				</Routes>
+			</Container>
+		</Router>
 	);
-};
+}
 
 export default App;
