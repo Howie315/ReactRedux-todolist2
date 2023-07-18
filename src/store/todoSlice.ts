@@ -1,15 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./store";
 
-
-// interface of the todoitem itself 
-interface Todo {
+// interface of the todoitem itself
+export interface Todo {
 	id: number;
 	text: string;
 	completed: boolean;
 }
 
-//the todo array 
+//the todo array
 interface TodoState {
 	todos: Todo[];
 }
@@ -18,7 +17,6 @@ interface TodoState {
 const initialState: TodoState = {
 	todos: [],
 };
-
 
 //the todo list with its functions
 // generally it creats a slice of the redux store.
@@ -47,10 +45,15 @@ export const todoSlice = createSlice({
 				state.todos.splice(index, 1);
 			}
 		},
+
+		reorderTodos: (state, action: PayloadAction<Todo[]>) => {
+			state.todos = action.payload;
+		},
 	},
 });
 
-export const { addTodo, toggleTodo, deleteTodo } = todoSlice.actions;
+export const { addTodo, toggleTodo, deleteTodo, reorderTodos } =
+	todoSlice.actions;
 
 export const selectTodos = (state: RootState) => state.todo.todos;
 
