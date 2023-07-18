@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store/store";
 import { addTodo, reorderTodos, selectTodos } from "../store/todoSlice";
-import { Typography, List, TextField, Button } from "@mui/material";
+import { Box, Typography, List, TextField, Button } from "@mui/material";
 import {
 	DragDropContext,
 	Droppable,
@@ -27,6 +30,7 @@ const TodoList: React.FC = () => {
 
 	const onDragEnd = (result: DropResult) => {
 		const source: DraggableLocation | undefined = result.source;
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const destination: DraggableLocation | null | undefined =
 			result.destination;
 
@@ -48,11 +52,17 @@ const TodoList: React.FC = () => {
 	};
 
 	return (
-		<div className="todo-list-container">
+		<Box
+			className="todo-list-container"
+			display="flex"
+			justifyContent="center"
+			alignItems="center"
+			flexDirection="column"
+		>
 			<Typography variant="h2" component="h2" className="todo-list-title">
 				Todo List
 			</Typography>
-			<div>
+			<Box>
 				<TextField
 					type="text"
 					label="New Todo"
@@ -69,8 +79,8 @@ const TodoList: React.FC = () => {
 				>
 					Add Todo
 				</Button>
-			</div>
-			<div className="todo-list">
+			</Box>
+			<Box className="todo-list">
 				<DragDropContext onDragEnd={onDragEnd}>
 					<Droppable droppableId="todoList">
 						{(provided) => (
@@ -101,8 +111,8 @@ const TodoList: React.FC = () => {
 						)}
 					</Droppable>
 				</DragDropContext>
-			</div>
-		</div>
+			</Box>
+		</Box>
 	);
 };
 
