@@ -2,8 +2,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../store/store";
-import { addTodo, reorderTodos, selectTodos } from "../store/todoSlice";
+import { useAppDispatch, useAppSelector } from "../store";
+import { addTodo, reorderTodos, selectTodos } from "../todoSlice";
+import TodoForm from "./TodoForm"; // Import the TodoForm component
 import { Box, Typography, List, TextField, Button } from "@mui/material";
 import {
 	DragDropContext,
@@ -20,13 +21,6 @@ const TodoList: React.FC = () => {
 	const todos = useAppSelector(selectTodos);
 	const [newTodoText, setNewTodoText] = useState("");
 	const dispatch = useAppDispatch();
-
-	const handleAddTodo = () => {
-		if (newTodoText.trim() !== "") {
-			dispatch(addTodo(newTodoText));
-			setNewTodoText("");
-		}
-	};
 
 	const onDragEnd = (result: DropResult) => {
 		const source: DraggableLocation | undefined = result.source;
@@ -62,24 +56,8 @@ const TodoList: React.FC = () => {
 			<Typography variant="h2" component="h2" className="todo-list-title">
 				Todo List
 			</Typography>
-			<Box>
-				<TextField
-					type="text"
-					label="New Todo"
-					value={newTodoText}
-					onChange={(e) => setNewTodoText(e.target.value)}
-					multiline
-					rows={1}
-					sx={{ mr: 1, width: 200 }}
-				/>
-				<Button
-					variant="contained"
-					onClick={handleAddTodo}
-					sx={{ minWidth: 100, minHeight: 53 }}
-				>
-					Add Todo
-				</Button>
-			</Box>
+
+			<TodoForm />
 			<Box className="todo-list">
 				<DragDropContext onDragEnd={onDragEnd}>
 					<Droppable droppableId="todoList">
