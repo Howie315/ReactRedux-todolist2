@@ -1,12 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../store";
-
+import { RootState } from "./store";
+import { Todo } from "./domain/Todo"; // Import the Todo interfac
 // interface of the todoitem itself
-export interface Todo {
-	id: number;
-	text: string;
-	completed: boolean;
-}
 
 //the todo array
 interface TodoState {
@@ -25,13 +20,9 @@ export const todoSlice = createSlice({
 	name: "todo",
 	initialState,
 	reducers: {
-		addTodo: (state, action: PayloadAction<string>) => {
-			const newTodo = {
-				id: Date.now(),
-				text: action.payload,
-				completed: false,
-			};
-			state.todos.push(newTodo);
+		addTodo: (state, action: PayloadAction<Todo>) => {
+			// Change the payload type to Todo
+			state.todos.push(action.payload);
 		},
 		toggleTodo: (state, action: PayloadAction<number>) => {
 			const index = state.todos.findIndex((todo) => todo.id === action.payload);
@@ -55,6 +46,7 @@ export const todoSlice = createSlice({
 export const { addTodo, toggleTodo, deleteTodo, reorderTodos } =
 	todoSlice.actions;
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 export const selectTodos = (state: RootState) => state.todo.todos;
 
 export default todoSlice.reducer;

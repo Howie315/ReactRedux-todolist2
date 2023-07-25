@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../store";
+import { useAppDispatch, useAppSelector } from "../store";
 import { addTodo, reorderTodos, selectTodos } from "../todoSlice";
 import TodoForm from "./TodoForm"; // Import the TodoForm component
 import { Box, Typography, List, TextField, Button } from "@mui/material";
@@ -21,13 +21,6 @@ const TodoList: React.FC = () => {
 	const todos = useAppSelector(selectTodos);
 	const [newTodoText, setNewTodoText] = useState("");
 	const dispatch = useAppDispatch();
-
-	const handleAddTodo = () => {
-		if (newTodoText.trim() !== "") {
-			dispatch(addTodo(newTodoText));
-			setNewTodoText("");
-		}
-	};
 
 	const onDragEnd = (result: DropResult) => {
 		const source: DraggableLocation | undefined = result.source;

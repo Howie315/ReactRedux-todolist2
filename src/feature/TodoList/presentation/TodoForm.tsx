@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { useAppDispatch } from "../../store";
+import { useAppDispatch } from "../store";
 import { addTodo } from "../todoSlice";
 import { Box } from "@mui/material";
 import Button from "../../../components/common/Button"; // Import the Button component
 import Input from "../../../components/common/Input"; // Import the Input component
+import { Todo } from "../domain/Todo";
 
 const TodoForm: React.FC = () => {
 	const [newTodoText, setNewTodoText] = useState("");
@@ -11,7 +12,13 @@ const TodoForm: React.FC = () => {
 
 	const handleAddTodo = () => {
 		if (newTodoText.trim() !== "") {
-			dispatch(addTodo(newTodoText));
+			const newTodo: Todo = {
+				id: Date.now(),
+				text: newTodoText,
+				completed: false,
+			};
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			dispatch(addTodo(newTodo)); // Dispatch the addTodo action with the newTodo object
 			setNewTodoText("");
 		}
 	};

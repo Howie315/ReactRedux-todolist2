@@ -1,7 +1,8 @@
 import React from "react";
-import { useAppDispatch } from "../../store";
-import { toggleTodo, deleteTodo, Todo, reorderTodos } from "../todoSlice";
+import { useAppDispatch } from "../store";
+import { toggleTodo, deleteTodo, reorderTodos } from "../todoSlice";
 import { Delete, Check, ArrowUpward } from "@mui/icons-material";
+import { Todo } from "../domain/Todo";
 
 import {
 	Checkbox,
