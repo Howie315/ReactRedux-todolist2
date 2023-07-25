@@ -7,7 +7,7 @@ import {
 	useLocation,
 } from "react-router-dom";
 import { Container, AppBar, Toolbar, Button } from "@mui/material";
-import TodoList from "./components/TodoList";
+import TodoList from "./feature/TodoList/presentation/TodoList";
 import About from "./components/About";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 import "./App.css";
