@@ -3,8 +3,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store";
-import { addTodo, reorderTodos, selectTodos } from "../todoSlice";
+import { addTodo, reorderTodos } from "../todoSlice";
 import TodoForm from "./TodoForm"; // Import the TodoForm component
+import {selectTodos} from "../todoSelector"
 import { Box, Typography, List, TextField, Button } from "@mui/material";
 import {
 	DragDropContext,
