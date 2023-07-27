@@ -5,21 +5,27 @@ import { Box } from "@mui/material";
 import Button from "../../../components/common/Button"; // Import the Button component
 import Input from "../../../components/common/Input"; // Import the Input component
 import { Todo } from "../domain/Todo";
+import { TodoListRepoImpl } from "../domain/TodoListRepo";
 
 const TodoForm: React.FC = () => {
 	const [newTodoText, setNewTodoText] = useState("");
 	const dispatch = useAppDispatch();
 
-	const handleAddTodo = () => {
+	const handleAddTodo = async () => {
 		if (newTodoText.trim() !== "") {
 			const newTodo: Todo = {
 				id: Date.now(),
 				text: newTodoText,
 				completed: false,
 			};
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			dispatch(addTodo(newTodo)); // Dispatch the addTodo action with the newTodo object
-			setNewTodoText("");
+
+			try {
+				const addedTodo = await TodoListRepoImpl.addTodo(newTodo);
+				dispatch(addTodo(addedTodo)); // Dispatch the addTodo action with the newly added todo
+				setNewTodoText("");
+			} catch (error) {
+				console.error("Failed to add todo:", error);
+			}
 		}
 	};
 
@@ -36,7 +42,12 @@ const TodoForm: React.FC = () => {
 			/>
 			<Button
 				variant="contained"
-				onClick={handleAddTodo}
+				// eslint-disable-next-line @typescript-eslint/no-misused-promises
+				onClick={() => {
+					void (async () => {
+						await handleAddTodo();
+					})();
+				}}
 				sx={{ minWidth: 100, minHeight: 53 }}
 			>
 				Add Todo

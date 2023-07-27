@@ -1,6 +1,12 @@
 import React from "react";
 import { useAppDispatch } from "../store";
-import { toggleTodo, deleteTodo, reorderTodos } from "../todoSlice";
+import {
+	toggleTodo,
+	deleteTodo,
+	reorderTodos,
+	updateTodo,
+	removeTodo,
+} from "../todoSlice";
 import { Delete, Check, ArrowUpward } from "@mui/icons-material";
 import { Todo } from "../domain/Todo";
 
@@ -19,16 +25,26 @@ interface Props {
 const TodoItem: React.FC<Props> = ({ todo }) => {
 	const dispatch = useAppDispatch();
 
-	const handleToggleClick = () => {
-		dispatch(toggleTodo(todo.id));
+	const handleToggleClick = async () => {
+		const toggledTodo = { ...todo, completed: !todo.completed };
+		try {
+			// eslint-disable-next-line @typescript-eslint/await-thenable
+			await dispatch(toggleTodo(todo.id));
+		} catch (error) {
+			console.error("Failed to toggle todo:", error);
+		}
 	};
 
 	const handleCheckboxClick = (event: React.ChangeEvent<HTMLInputElement>) => {
 		event.stopPropagation();
-		handleToggleClick();
+		handleToggleClick().catch((error) => {
+			console.error("Failed to handle checkbox click:", error);
+		});
 	};
 	const handleDeleteClick = () => {
-		dispatch(deleteTodo(todo.id));
+		dispatch(removeTodo(todo.id)).catch((error) => {
+			console.error("Failed to delete todo:", error);
+		});
 	};
 
 	return (
@@ -36,12 +52,20 @@ const TodoItem: React.FC<Props> = ({ todo }) => {
 			key={todo.id}
 			disablePadding
 			button
-			onClick={handleToggleClick}
+			onClick={() => {
+				void (async () => {
+					await handleToggleClick();
+				})();
+			}}
 			sx={{
 				textDecoration: todo.completed ? "line-through" : "none",
 			}}
 		>
-			<Checkbox checked={todo.completed} onClick={handleCheckboxClick} />
+			<Checkbox
+				checked={todo.completed}
+				onClick={handleCheckboxClick}
+				onChange={(e) => e.stopPropagation()}
+			></Checkbox>
 
 			<ListItemText primary={todo.text} />
 			<ListItemSecondaryAction>

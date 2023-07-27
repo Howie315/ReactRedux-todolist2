@@ -1,7 +1,8 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./store";
 import { Todo } from "./domain/Todo"; // Import the Todo interfac
-// interface of the todoitem itself
+import { TodoListRepoImpl } from "./domain/TodoListRepo";
+
 
 //the todo array
 interface TodoState {
@@ -12,6 +13,33 @@ interface TodoState {
 const initialState: TodoState = {
 	todos: [],
 };
+
+// Async thunks
+export const fetchTodos = createAsyncThunk("todo/fetchTodos", async () => {
+	return await TodoListRepoImpl.getTodos();
+});
+
+export const saveTodo = createAsyncThunk(
+	"todo/saveTodo",
+	async (todo: Todo) => {
+		return await TodoListRepoImpl.addTodo(todo);
+	},
+);
+
+export const updateTodo = createAsyncThunk(
+	"todo/updateTodo",
+	async (todo: Todo) => {
+		return await TodoListRepoImpl.toggleTodo(todo);
+	},
+);
+
+export const removeTodo = createAsyncThunk(
+	"todo/removeTodo",
+	async (todoId: number) => {
+		await TodoListRepoImpl.deleteTodo(todoId);
+		return todoId;
+	},
+);
 
 //the todo list with its functions
 // generally it creats a slice of the redux store.
@@ -40,6 +68,27 @@ export const todoSlice = createSlice({
 		reorderTodos: (state, action: PayloadAction<Todo[]>) => {
 			state.todos = action.payload;
 		},
+	},
+
+	extraReducers: (builder) => {
+		builder
+			.addCase(fetchTodos.fulfilled, (state, action) => {
+				state.todos = action.payload;
+			})
+			.addCase(saveTodo.fulfilled, (state, action) => {
+				state.todos.push(action.payload);
+			})
+			.addCase(updateTodo.fulfilled, (state, action) => {
+				const index = state.todos.findIndex(
+					(todo) => todo.id === action.payload.id,
+				);
+				if (index !== -1) {
+					state.todos[index] = action.payload;
+				}
+			})
+			.addCase(removeTodo.fulfilled, (state, action) => {
+				state.todos = state.todos.filter((todo) => todo.id !== action.payload);
+			});
 	},
 });
 
