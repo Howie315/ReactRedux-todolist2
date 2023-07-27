@@ -1,31 +1,32 @@
 import React, { useState } from "react";
 import { useAppDispatch } from "../store";
-import { addTodo } from "../todoSlice";
+import { addTodo, saveTodo } from "../todoSlice";
 import { Box } from "@mui/material";
 import Button from "../../../components/common/Button"; // Import the Button component
 import Input from "../../../components/common/Input"; // Import the Input component
 import { Todo } from "../domain/Todo";
 import { TodoListRepoImpl } from "../domain/TodoListRepo";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 const TodoForm: React.FC = () => {
 	const [newTodoText, setNewTodoText] = useState("");
 	const dispatch = useAppDispatch();
 
-	const handleAddTodo = async () => {
-		if (newTodoText.trim() !== "") {
+	const handleAddTodo = () => {
+		if (newTodoText.trim()) {
 			const newTodo: Todo = {
 				id: Date.now(),
 				text: newTodoText,
 				completed: false,
 			};
-
-			try {
-				const addedTodo = await TodoListRepoImpl.addTodo(newTodo);
-				dispatch(addTodo(addedTodo)); // Dispatch the addTodo action with the newly added todo
-				setNewTodoText("");
-			} catch (error) {
-				console.error("Failed to add todo:", error);
-			}
+			dispatch(saveTodo(newTodo))
+				.then(unwrapResult) // Unwraps the payload or throws an error if the promise was rejected.
+				.then((addedTodo) => {
+					setNewTodoText(""); // Clear the input only if the todo was successfully saved.
+				})
+				.catch((error) => {
+					console.error("Failed to add todo:", error);
+				});
 		}
 	};
 
