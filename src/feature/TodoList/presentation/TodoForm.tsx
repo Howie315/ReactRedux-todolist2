@@ -5,7 +5,7 @@ import { Box } from "@mui/material";
 import Button from "../../../components/common/Button"; // Import the Button component
 import Input from "../../../components/common/Input"; // Import the Input component
 import { Todo } from "../domain/Todo";
-import { TodoListRepoImpl } from "../domain/TodoListRepo";
+
 import { unwrapResult } from "@reduxjs/toolkit";
 
 const TodoForm: React.FC = () => {
@@ -45,8 +45,9 @@ const TodoForm: React.FC = () => {
 				variant="contained"
 				// eslint-disable-next-line @typescript-eslint/no-misused-promises
 				onClick={() => {
+					// eslint-disable-next-line @typescript-eslint/require-await
 					void (async () => {
-						await handleAddTodo();
+						handleAddTodo();
 					})();
 				}}
 				sx={{ minWidth: 100, minHeight: 53 }}
