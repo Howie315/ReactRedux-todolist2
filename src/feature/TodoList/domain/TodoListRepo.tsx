@@ -8,26 +8,40 @@ export interface TodoListRepo {
 	deleteTodo(todoId: number): Promise<void>;
 }
 
-// Mock implementation of the TodoListRepo
-let todos: Todo[] = [];
 
-export const TodoListRepoImpl: TodoListRepo = {
-	getTodos: () => Promise.resolve(todos),
-	addTodo: (todo) => {
+//turn into a class
+//use the todointerface to pass into the instance of it into the todolistrepoimpl
+//use the array within in the todolistrepoimpl
+//
+class TodoListRepoImpl implements TodoListRepo {
+	private todos: Todo[]; // The array should be inside the class
+
+	constructor() {
+		this.todos = [];
+	}
+	getTodos(): Promise<Todo[]> {
+		return Promise.resolve(this.todos);
+	}
+
+	addTodo(todo: Todo): Promise<Todo> {
 		const newTodo = { ...todo };
-		todos.push(newTodo);
+		this.todos.push(newTodo);
 		return Promise.resolve(newTodo);
-	},
-	toggleTodo: (todo) => {
-		const index = todos.findIndex((t) => t.id === todo.id);
+	}
+
+	toggleTodo(todo: Todo): Promise<Todo> {
+		const index = this.todos.findIndex((t) => t.id === todo.id);
 		if (index !== -1) {
-			todos[index] = { ...todo };
+			this.todos[index] = { ...todo };
 			return Promise.resolve(todo);
 		}
 		return Promise.reject(new Error("Todo not found"));
-	},
-	deleteTodo: (todoId) => {
-		todos = todos.filter((t) => t.id !== todoId);
+	}
+
+	deleteTodo(todoId: number): Promise<void> {
+		this.todos = this.todos.filter((t) => t.id !== todoId);
 		return Promise.resolve();
-	},
-};
+	}
+}
+
+export default TodoListRepoImpl;

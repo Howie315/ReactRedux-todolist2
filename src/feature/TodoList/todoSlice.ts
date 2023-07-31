@@ -1,42 +1,48 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./store";
 import { Todo } from "./domain/Todo"; // Import the Todo interfac
-import { TodoListRepoImpl } from "./domain/TodoListRepo";
-
+import TodoListRepoImpl, { TodoListRepo } from "./domain/TodoListRepo";
 
 //the todo array
 interface TodoState {
 	todos: Todo[];
 }
 
+
+
+// Create an instance of TodoListRepoImpl to use as the implementation
+const todoListRepo: TodoListRepo = new TodoListRepoImpl();
+// this is explicit typing 
+
 // the intial state of the todo array
 const initialState: TodoState = {
 	todos: [],
 };
 
-// Async thunks
+
+
 export const fetchTodos = createAsyncThunk("todo/fetchTodos", async () => {
-	return await TodoListRepoImpl.getTodos();
+	return await todoListRepo.getTodos();
 });
 
 export const saveTodo = createAsyncThunk(
 	"todo/saveTodo",
 	async (todo: Todo) => {
-		return await TodoListRepoImpl.addTodo(todo);
+		return await todoListRepo.addTodo(todo);
 	},
 );
 
 export const updateTodo = createAsyncThunk(
 	"todo/updateTodo",
 	async (todo: Todo) => {
-		return await TodoListRepoImpl.toggleTodo(todo);
+		return await todoListRepo.toggleTodo(todo);
 	},
 );
 
 export const removeTodo = createAsyncThunk(
 	"todo/removeTodo",
 	async (todoId: number) => {
-		await TodoListRepoImpl.deleteTodo(todoId);
+		await todoListRepo.deleteTodo(todoId);
 		return todoId;
 	},
 );
