@@ -5,8 +5,11 @@ import React, { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store";
 import { addTodo, reorderTodos } from "../todoSlice";
 import TodoForm from "./TodoForm"; // Import the TodoForm component
-import { selectTodos } from "../todoSelector";
+import { selectTodos, selectLoadingStates, selectError } from "../todoSelector";
 import { Box, Typography, List, TextField, Button } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
+import Alert from "@mui/material/Alert";
+
 import {
 	DragDropContext,
 	Droppable,
@@ -20,8 +23,33 @@ import "./TodoList.css";
 
 const TodoList: React.FC = () => {
 	const todos = useAppSelector(selectTodos);
+
+	const loadingStates = useAppSelector(selectLoadingStates);
+	const error = useAppSelector(selectError);
+	const error2 = useAppSelector((state) => state.todo.error);
 	const [newTodoText, setNewTodoText] = useState("");
 	const dispatch = useAppDispatch();
+
+	const isLoading = useAppSelector(
+		(state) =>
+			state.todo.loadingStates.fetch === "pending" ||
+			state.todo.loadingStates.save === "pending" ||
+			state.todo.loadingStates.update === "pending" ||
+			state.todo.loadingStates.remove === "pending",
+	);
+
+	if (isLoading) {
+		return (
+			<Box
+				display="flex"
+				justifyContent="center"
+				alignItems="center"
+				height="100vh"
+			>
+				<CircularProgress />
+			</Box>
+		);
+	}
 
 	const onDragEnd = (result: DropResult) => {
 		const source: DraggableLocation | undefined = result.source;
@@ -54,6 +82,7 @@ const TodoList: React.FC = () => {
 			alignItems="center"
 			flexDirection="column"
 		>
+			{error2 && <Alert severity="error">{error2}</Alert>}
 			<Typography variant="h2" component="h2" className="todo-list-title">
 				Todo List
 			</Typography>
