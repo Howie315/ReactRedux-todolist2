@@ -12,21 +12,19 @@ const TodoForm: React.FC = () => {
 	const [newTodoText, setNewTodoText] = useState("");
 	const dispatch = useAppDispatch();
 
-	const handleAddTodo = () => {
+	const handleAddTodo = async () => {
 		if (newTodoText.trim()) {
 			const newTodo: Todo = {
 				id: Date.now(),
 				text: newTodoText,
 				completed: false,
 			};
-			dispatch(saveTodo(newTodo))
-				.then(unwrapResult) // Unwraps the payload or throws an error if the promise was rejected.
-				.then((addedTodo) => {
-					setNewTodoText(""); // Clear the input only if the todo was successfully saved.
-				})
-				.catch((error) => {
-					console.error("Failed to add todo:", error);
-				});
+			try {
+				await dispatch(saveTodo(newTodo));
+				setNewTodoText(""); // Clear the input only if the todo was successfully saved.
+			} catch (error) {
+				console.error("Failed to add todo:", error);
+			}
 		}
 	};
 
@@ -44,12 +42,7 @@ const TodoForm: React.FC = () => {
 			<Button
 				variant="contained"
 				// eslint-disable-next-line @typescript-eslint/no-misused-promises
-				onClick={() => {
-					// eslint-disable-next-line @typescript-eslint/require-await
-					void (async () => {
-						handleAddTodo();
-					})();
-				}}
+				onClick={handleAddTodo}
 				sx={{ minWidth: 100, minHeight: 53 }}
 			>
 				Add Todo

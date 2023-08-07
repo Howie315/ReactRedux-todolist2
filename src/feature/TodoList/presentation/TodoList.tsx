@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store";
-import { addTodo, reorderTodos } from "../todoSlice";
+import { addTodo, fetchTodos, reorderTodos } from "../todoSlice";
 import TodoForm from "./TodoForm"; // Import the TodoForm component
 import { selectTodos, selectLoadingStates, selectError } from "../todoSelector";
 import { Box, Typography, List, TextField, Button } from "@mui/material";
@@ -26,19 +26,15 @@ const TodoList: React.FC = () => {
 
 	const loadingStates = useAppSelector(selectLoadingStates);
 	const error = useAppSelector(selectError);
-	const error2 = useAppSelector((state) => state.todo.error);
+
 	const [newTodoText, setNewTodoText] = useState("");
 	const dispatch = useAppDispatch();
 
-	const isLoading = useAppSelector(
-		(state) =>
-			state.todo.loadingStates.fetch === "pending" ||
-			state.todo.loadingStates.save === "pending" ||
-			state.todo.loadingStates.update === "pending" ||
-			state.todo.loadingStates.remove === "pending",
-	);
+	useEffect(() => {
+		void dispatch(fetchTodos());
+	}, [dispatch]);
 
-	if (isLoading) {
+	if (loadingStates) {
 		return (
 			<Box
 				display="flex"
@@ -82,7 +78,7 @@ const TodoList: React.FC = () => {
 			alignItems="center"
 			flexDirection="column"
 		>
-			{error2 && <Alert severity="error">{error2}</Alert>}
+			{error && <Alert severity="error">{error}</Alert>}
 			<Typography variant="h2" component="h2" className="todo-list-title">
 				Todo List
 			</Typography>

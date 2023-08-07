@@ -1,17 +1,13 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./store";
-import { Todo } from "./domain/Todo"; // Import the Todo interfac
+import { Todo } from "./domain/Todo"; // Import the Todo interface
+import axios from "axios";
 import TodoListRepoImpl, { TodoListRepo } from "./domain/TodoListRepo";
 
 //the todo array
 interface TodoState {
 	todos: Todo[];
-	loadingStates: {
-		fetch: "idle" | "pending" | "succeeded" | "failed";
-		save: "idle" | "pending" | "succeeded" | "failed";
-		update: "idle" | "pending" | "succeeded" | "failed";
-		remove: "idle" | "pending" | "succeeded" | "failed";
-	};
+	isLoading: boolean;
 	error: string | null;
 }
 
@@ -22,12 +18,7 @@ const todoListRepo: TodoListRepo = new TodoListRepoImpl();
 // the intial state of the todo array
 const initialState: TodoState = {
 	todos: [],
-	loadingStates: {
-		fetch: "idle",
-		save: "idle",
-		update: "idle",
-		remove: "idle",
-	},
+	isLoading: false,
 	error: null,
 };
 
@@ -89,36 +80,37 @@ export const todoSlice = createSlice({
 	extraReducers: (builder) => {
 		builder
 			.addCase(fetchTodos.pending, (state) => {
-				state.loadingStates.fetch = "pending";
+				state.isLoading = true;
+				state.error = null;
 			})
 			.addCase(fetchTodos.fulfilled, (state, action) => {
-				state.loadingStates.fetch = "succeeded";
+				state.isLoading = false;
 				state.todos = action.payload;
 				state.error = null;
 			})
 			.addCase(fetchTodos.rejected, (state, action) => {
-				state.loadingStates.fetch = "failed";
+				state.isLoading = false;
 				state.error = action.error.message || "An error occurred";
 			})
 
 			.addCase(saveTodo.pending, (state) => {
-				state.loadingStates.save = "pending";
+				state.isLoading = true;
 			})
 			.addCase(saveTodo.fulfilled, (state, action) => {
-				state.loadingStates.save = "succeeded";
+				state.isLoading = false;
 				state.todos.push(action.payload);
 				state.error = null;
 			})
 			.addCase(saveTodo.rejected, (state, action) => {
-				state.loadingStates.save = "failed";
+				state.isLoading = false;
 				state.error = action.error.message || "An error occurred";
 			})
 
 			.addCase(updateTodo.pending, (state) => {
-				state.loadingStates.update = "pending";
+				state.isLoading = true;
 			})
 			.addCase(updateTodo.fulfilled, (state, action) => {
-				state.loadingStates.update = "succeeded";
+				state.isLoading = false;
 				const index = state.todos.findIndex(
 					(todo) => todo.id === action.payload.id,
 				);
@@ -128,20 +120,20 @@ export const todoSlice = createSlice({
 				state.error = null;
 			})
 			.addCase(updateTodo.rejected, (state, action) => {
-				state.loadingStates.update = "failed";
+				state.isLoading = false;
 				state.error = action.error.message || "An error occurred";
 			})
 
 			.addCase(removeTodo.pending, (state) => {
-				state.loadingStates.remove = "pending";
+				state.isLoading = true;
 			})
 			.addCase(removeTodo.fulfilled, (state, action) => {
-				state.loadingStates.remove = "succeeded";
+				state.isLoading = false;
 				state.todos = state.todos.filter((todo) => todo.id !== action.payload);
 				state.error = null;
 			})
 			.addCase(removeTodo.rejected, (state, action) => {
-				state.loadingStates.remove = "failed";
+				state.isLoading = false;
 				state.error = action.error.message || "An error occurred";
 			});
 	},
