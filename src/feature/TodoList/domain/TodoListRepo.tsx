@@ -16,10 +16,15 @@ class TodoListRepoImpl implements TodoListRepo {
 	private todos: Todo[]; // The array should be inside the class
 
 	constructor() {
-		this.todos = [];
+		this.todos = [
+			{ id: 1, text: "Buy groceries", completed: false },
+			{ id: 2, text: "Do laundry", completed: false },
+			{ id: 3, text: "Walk the dog", completed: false },
+		];
 	}
 	async getTodos(): Promise<Todo[]> {
-		return Promise.resolve(this.todos);
+		await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay of 1 second
+		return Promise.resolve([...this.todos]); // Copy the array to ensure it is extensible
 	}
 
 	async addTodo(todo: Todo): Promise<Todo> {
@@ -29,7 +34,7 @@ class TodoListRepoImpl implements TodoListRepo {
 			throw new Error("The item 'apple' is not correct.");
 		}
 		const newTodo = { ...todo };
-		await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay of 1 seconds
+
 		this.todos.push(newTodo);
 		return Promise.resolve(newTodo);
 	}
@@ -40,13 +45,11 @@ class TodoListRepoImpl implements TodoListRepo {
 			this.todos[index] = { ...todo };
 			return Promise.resolve(todo);
 		}
-		await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay of 1 second
 		return Promise.reject(new Error("Todo not found"));
 	}
 
 	async deleteTodo(todoId: number): Promise<void> {
 		this.todos = this.todos.filter((t) => t.id !== todoId);
-		await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay of 1 seconds
 		return Promise.resolve();
 	}
 }
