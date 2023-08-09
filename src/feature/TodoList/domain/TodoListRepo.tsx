@@ -1,6 +1,8 @@
 import { Todo } from "./Todo";
 import db from "../utils/db";
+import { TodoEntity } from "../entity/TodoEntity";
 import Dexie from "dexie";
+import { mapToDomainModel, mapToEntityModel } from "./todoMappers"; // Import your mapper functions
 // Define the interface for the TodoListRepo
 export interface TodoListRepo {
 	getTodos(): Promise<Todo[]>;
@@ -22,12 +24,9 @@ class TodoListRepoImpl implements TodoListRepo {
 	async getTodos(): Promise<Todo[]> {
 		try {
 			await new Promise((resolve) => setTimeout(resolve, 1000));
-			// Use the Dexie library to fetch data from the 'todos' table in IndexedDB
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-			const todos = await db.todos.toArray();
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-
-			return todos;
+			const entityTodos = await db.todos.toArray();
+			const domainTodos = entityTodos.map((entity) => mapToDomainModel(entity));
+			return domainTodos;
 		} catch (error) {
 			console.error("Error while fetching todos:", error);
 			throw new Error("Failed to fetch todos");
@@ -36,21 +35,35 @@ class TodoListRepoImpl implements TodoListRepo {
 
 	async addTodo(todo: Todo): Promise<Todo> {
 		try {
-			// Use the Dexie library to add a new todo to the 'todos' table in IndexedDB
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-			const newTodoId = await db.todos.add(todo);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			return { ...todo, id: newTodoId };
+			if (todo.text.toLowerCase() === "apple") {
+				throw new Error("The item 'apple' is not correct.");
+			}
+			const entityTodo: TodoEntity = mapToEntityModel(todo);
+			const newTodoId = await db.todos.add(entityTodo);
+
+			const addedTodo: TodoEntity | undefined = await db.todos.get(newTodoId);
+
+			if (!addedTodo) {
+				throw new Error("Failed to retrieve added todo from the database.");
+			}
+
+			// Map the fetched entity back to the Todo type
+			const newTodo: Todo = mapToDomainModel(addedTodo);
+
+			return newTodo;
 		} catch (error) {
 			console.error("Error while adding a todo:", error);
-			throw new Error("Failed to add todo");
+			throw new Error("The item is not available to add");
 		}
 	}
 
 	async toggleTodo(todo: Todo): Promise<Todo> {
 		try {
-			// Use the Dexie library to update a todo in the 'todos' table in IndexedDB
-			await db.todos.update(todo.id, { completed: !todo.completed });
+			const updatedEntityTodo = {
+				...mapToEntityModel(todo),
+				completed: !todo.completed,
+			};
+			await db.todos.update(todo.id, updatedEntityTodo);
 			return { ...todo, completed: !todo.completed };
 		} catch (error) {
 			console.error("Error while toggling a todo:", error);
@@ -60,7 +73,6 @@ class TodoListRepoImpl implements TodoListRepo {
 
 	async deleteTodo(todoId: number): Promise<void> {
 		try {
-			// Use the Dexie library to delete a todo from the 'todos' table in IndexedDB
 			await db.todos.delete(todoId);
 		} catch (error) {
 			console.error("Error while deleting a todo:", error);
