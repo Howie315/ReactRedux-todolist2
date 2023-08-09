@@ -41,6 +41,7 @@ class TodoListRepoImpl implements TodoListRepo {
 			const entityTodo: TodoEntity = mapToEntityModel(todo);
 			const newTodoId = await db.todos.add(entityTodo);
 
+			// this retrieves the eneity with the newTodoid and then we are gonna transform it
 			const addedTodo: TodoEntity | undefined = await db.todos.get(newTodoId);
 
 			if (!addedTodo) {
