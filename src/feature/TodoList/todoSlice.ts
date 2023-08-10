@@ -94,7 +94,7 @@ export const todoSlice = createSlice({
 			})
 
 			.addCase(saveTodo.pending, (state) => {
-				state.isLoading = true;
+				state.isLoading = false;
 			})
 			.addCase(saveTodo.fulfilled, (state, action) => {
 				state.isLoading = false;
@@ -125,7 +125,7 @@ export const todoSlice = createSlice({
 			})
 
 			.addCase(removeTodo.pending, (state) => {
-				state.isLoading = true;
+				state.isLoading = false;
 			})
 			.addCase(removeTodo.fulfilled, (state, action) => {
 				state.isLoading = false;
