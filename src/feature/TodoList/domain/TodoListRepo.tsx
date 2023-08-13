@@ -16,16 +16,26 @@ export interface TodoListRepo {
 //use the array within in the todolistrepoimpl
 //
 class TodoListRepoImpl implements TodoListRepo {
+	private todoCache: Todo[] = [];
+
 	constructor() {
 		// You can also add data here to prepopulate the database, if needed
 		void db.open(); // Open the database
 	}
 
 	async getTodos(): Promise<Todo[]> {
+		if (this.todoCache.length > 0) {
+			return this.todoCache;
+		}
+
 		try {
 			await new Promise((resolve) => setTimeout(resolve, 1000));
 			const entityTodos = await db.todos.toArray();
 			const domainTodos = entityTodos.map((entity) => mapToDomainModel(entity));
+
+			// Update the cache
+			this.todoCache = domainTodos;
+
 			return domainTodos;
 		} catch (error) {
 			console.error("Error while fetching todos:", error);
@@ -51,6 +61,9 @@ class TodoListRepoImpl implements TodoListRepo {
 			// Map the fetched entity back to the Todo type
 			const newTodo: Todo = mapToDomainModel(addedTodo);
 
+			// Clear the cache after adding a new todo
+			this.todoCache = [];
+
 			return newTodo;
 		} catch (error) {
 			console.error("Error while adding a todo:", error);
@@ -65,6 +78,9 @@ class TodoListRepoImpl implements TodoListRepo {
 				completed: !todo.completed,
 			};
 			await db.todos.update(todo.id, updatedEntityTodo);
+
+			// Clear the cache after toggling a todo
+			this.todoCache = [];
 			return { ...todo, completed: !todo.completed };
 		} catch (error) {
 			console.error("Error while toggling a todo:", error);
@@ -75,6 +91,8 @@ class TodoListRepoImpl implements TodoListRepo {
 	async deleteTodo(todoId: number): Promise<void> {
 		try {
 			await db.todos.delete(todoId);
+			// Clear the cache after deleting a todo
+			this.todoCache = [];
 		} catch (error) {
 			console.error("Error while deleting a todo:", error);
 			throw new Error("Failed to delete todo");
