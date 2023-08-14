@@ -1,14 +1,14 @@
-import { TodoAPIModel } from "../api/TodoApiModel";
+import { TodoEntity } from "../entity/TodoEntity";
 import { Todo } from "./Todo";
 
-export const mapToDomainModel = (apiModel: TodoAPIModel): Todo => ({
-	id: apiModel.todo_id,
-	text: apiModel.description,
-	completed: apiModel.is_done,
+export const mapToDomainModel = (entityModel: TodoEntity): Todo => ({
+	id: entityModel.id,
+	text: entityModel.text,
+	completed: entityModel.completed,
 });
 
-export const mapToApiModel = (domainModel: Todo): TodoAPIModel => ({
-	todo_id: domainModel.id,
-	description: domainModel.text,
-	is_done: domainModel.completed,
+export const mapToEntityModel = (domainModel: Todo): TodoEntity => ({
+	id: domainModel.id,
+	text: domainModel.text,
+	completed: domainModel.completed,
 });

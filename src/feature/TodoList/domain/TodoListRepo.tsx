@@ -1,5 +1,8 @@
 import { Todo } from "./Todo";
-
+import db from "../utils/db";
+import { TodoEntity } from "../entity/TodoEntity";
+import Dexie from "dexie";
+import { mapToDomainModel, mapToEntityModel } from "./todoMappers"; // Import your mapper functions
 // Define the interface for the TodoListRepo
 export interface TodoListRepo {
 	getTodos(): Promise<Todo[]>;
@@ -13,44 +16,87 @@ export interface TodoListRepo {
 //use the array within in the todolistrepoimpl
 //
 class TodoListRepoImpl implements TodoListRepo {
-	private todos: Todo[]; // The array should be inside the class
+	private todoCache: Todo[] = [];
 
 	constructor() {
-		this.todos = [
-			{ id: 1, text: "Buy groceries", completed: false },
-			{ id: 2, text: "Do laundry", completed: false },
-			{ id: 3, text: "Walk the dog", completed: false },
-		];
+		// You can also add data here to prepopulate the database, if needed
+		void db.open(); // Open the database
 	}
+
 	async getTodos(): Promise<Todo[]> {
-		await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay of 1 second
-		return Promise.resolve([...this.todos]); // Copy the array to ensure it is extensible
+		if (this.todoCache.length > 0) {
+			return this.todoCache;
+		}
+
+		try {
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+			const entityTodos = await db.todos.toArray();
+			const domainTodos = entityTodos.map((entity) => mapToDomainModel(entity));
+
+			// Update the cache
+			this.todoCache = domainTodos;
+
+			return domainTodos;
+		} catch (error) {
+			console.error("Error while fetching todos:", error);
+			throw new Error("Failed to fetch todos");
+		}
 	}
 
 	async addTodo(todo: Todo): Promise<Todo> {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-		if (todo.text.toLowerCase() === "apple") {
-			// assuming the attribute is 'name'
-			throw new Error("The item 'apple' is not correct.");
-		}
-		const newTodo = { ...todo };
+		try {
+			if (todo.text.toLowerCase() === "apple") {
+				throw new Error("The item 'apple' is not correct.");
+			}
+			const entityTodo: TodoEntity = mapToEntityModel(todo);
+			const newTodoId = await db.todos.add(entityTodo);
 
-		this.todos.push(newTodo);
-		return Promise.resolve(newTodo);
+			// this retrieves the eneity with the newTodoid and then we are gonna transform it
+			const addedTodo: TodoEntity | undefined = await db.todos.get(newTodoId);
+
+			if (!addedTodo) {
+				throw new Error("Failed to retrieve added todo from the database.");
+			}
+
+			// Map the fetched entity back to the Todo type
+			const newTodo: Todo = mapToDomainModel(addedTodo);
+
+			// Clear the cache after adding a new todo
+			this.todoCache = [];
+
+			return newTodo;
+		} catch (error) {
+			console.error("Error while adding a todo:", error);
+			throw new Error("The item is not available to add");
+		}
 	}
 
 	async toggleTodo(todo: Todo): Promise<Todo> {
-		const index = this.todos.findIndex((t) => t.id === todo.id);
-		if (index !== -1) {
-			this.todos[index] = { ...todo };
-			return Promise.resolve(todo);
+		try {
+			const updatedEntityTodo = {
+				...mapToEntityModel(todo),
+				completed: !todo.completed,
+			};
+			await db.todos.update(todo.id, updatedEntityTodo);
+
+			// Clear the cache after toggling a todo
+			this.todoCache = [];
+			return { ...todo, completed: !todo.completed };
+		} catch (error) {
+			console.error("Error while toggling a todo:", error);
+			throw new Error("Failed to toggle todo");
 		}
-		return Promise.reject(new Error("Todo not found"));
 	}
 
 	async deleteTodo(todoId: number): Promise<void> {
-		this.todos = this.todos.filter((t) => t.id !== todoId);
-		return Promise.resolve();
+		try {
+			await db.todos.delete(todoId);
+			// Clear the cache after deleting a todo
+			this.todoCache = [];
+		} catch (error) {
+			console.error("Error while deleting a todo:", error);
+			throw new Error("Failed to delete todo");
+		}
 	}
 }
 
