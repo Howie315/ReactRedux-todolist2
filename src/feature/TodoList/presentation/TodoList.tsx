@@ -30,22 +30,12 @@ const TodoList: React.FC = () => {
 	const [newTodoText, setNewTodoText] = useState("");
 	const dispatch = useAppDispatch();
 
+	const [enableAnimations, setEnableAnimations] = useState(false); // Add this state
+
 	useEffect(() => {
+		setEnableAnimations(false); // Disable animations while fetching todos
 		void dispatch(fetchTodos());
 	}, [dispatch]);
-
-	if (loadingStates) {
-		return (
-			<Box
-				display="flex"
-				justifyContent="center"
-				alignItems="center"
-				height="100vh"
-			>
-				<CircularProgress />
-			</Box>
-		);
-	}
 
 	const onDragEnd = (result: DropResult) => {
 		const source: DraggableLocation | undefined = result.source;

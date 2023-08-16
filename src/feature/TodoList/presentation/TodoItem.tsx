@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAppDispatch } from "../store";
 import {
 	toggleTodo,
@@ -22,8 +22,6 @@ import {
 
 import "./TodoItem.css";
 
-import { CSSTransition } from "react-transition-group";
-
 interface Props {
 	todo: Todo;
 }
@@ -32,12 +30,21 @@ const TodoItem: React.FC<Props> = ({ todo }) => {
 	const dispatch = useAppDispatch();
 
 	const [isExiting, setIsExiting] = useState(false);
+	const [completed, setCompleted] = useState(todo.completed);
+	const [initialLoad, setInitialLoad] = useState(true); // Add this state
+
+	useEffect(() => {
+		// After the initial load, disable the initialLoad state
+		if (initialLoad) {
+			setInitialLoad(false);
+		}
+	}, [initialLoad]);
 
 	const handleToggleClick = async () => {
-		const toggledTodo = { ...todo, completed: !todo.completed };
+		const updatedTodo = { ...todo, completed: !todo.completed };
 		try {
-			// eslint-disable-next-line @typescript-eslint/await-thenable
-			await dispatch(toggleTodo(todo.id));
+			await dispatch(updateTodo(updatedTodo)); // Use the updateTodo action instead
+			setCompleted(!completed); // Update the completed status
 		} catch (error) {
 			console.error("Failed to toggle todo:", error);
 		}
@@ -78,15 +85,14 @@ const TodoItem: React.FC<Props> = ({ todo }) => {
 					})();
 				}}
 				sx={{
-					textDecoration: todo.completed ? "line-through" : "none",
+					textDecoration: completed ? "line-through" : "none",
 				}}
 			>
 				<Checkbox
-					checked={todo.completed}
+					checked={completed}
 					onClick={handleCheckboxClick}
 					onChange={(e) => e.stopPropagation()}
 				></Checkbox>
-
 				<ListItemText primary={todo.text} />
 				<ListItemSecondaryAction>
 					<IconButton edge="end" onClick={handleDeleteClick}>
