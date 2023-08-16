@@ -1,4 +1,5 @@
-import React from "react";
+/* eslint-disable @typescript-eslint/no-misused-promises */
+import React, { useState } from "react";
 import { useAppDispatch } from "../store";
 import {
 	toggleTodo,
@@ -16,7 +17,12 @@ import {
 	ListItemText,
 	ListItemSecondaryAction,
 	IconButton,
+	Slide,
 } from "@mui/material";
+
+import "./TodoItem.css";
+
+import { CSSTransition } from "react-transition-group";
 
 interface Props {
 	todo: Todo;
@@ -24,6 +30,8 @@ interface Props {
 
 const TodoItem: React.FC<Props> = ({ todo }) => {
 	const dispatch = useAppDispatch();
+
+	const [isExiting, setIsExiting] = useState(false);
 
 	const handleToggleClick = async () => {
 		const toggledTodo = { ...todo, completed: !todo.completed };
@@ -41,39 +49,52 @@ const TodoItem: React.FC<Props> = ({ todo }) => {
 			console.error("Failed to handle checkbox click:", error);
 		});
 	};
-	const handleDeleteClick = () => {
-		dispatch(removeTodo(todo.id)).catch((error) => {
-			console.error("Failed to delete todo:", error);
-		});
+	// eslint-disable-next-line @typescript-eslint/require-await
+	const handleDeleteClick = async () => {
+		setIsExiting(true);
+		// eslint-disable-next-line @typescript-eslint/no-misused-promises
+		setTimeout(async () => {
+			try {
+				await dispatch(removeTodo(todo.id));
+			} catch (error) {
+				console.error("Failed to delete todo:", error);
+			}
+		}, 300); // Adjust the timeout based on your animation duration
 	};
 
 	return (
-		<ListItem
-			key={todo.id}
-			disablePadding
-			button
-			onClick={() => {
-				void (async () => {
-					await handleToggleClick();
-				})();
-			}}
-			sx={{
-				textDecoration: todo.completed ? "line-through" : "none",
-			}}
+		<Slide
+			direction={isExiting ? "left" : "right"}
+			in={!isExiting}
+			timeout={300}
 		>
-			<Checkbox
-				checked={todo.completed}
-				onClick={handleCheckboxClick}
-				onChange={(e) => e.stopPropagation()}
-			></Checkbox>
+			<ListItem
+				key={todo.id}
+				disablePadding
+				button
+				onClick={() => {
+					void (async () => {
+						await handleToggleClick();
+					})();
+				}}
+				sx={{
+					textDecoration: todo.completed ? "line-through" : "none",
+				}}
+			>
+				<Checkbox
+					checked={todo.completed}
+					onClick={handleCheckboxClick}
+					onChange={(e) => e.stopPropagation()}
+				></Checkbox>
 
-			<ListItemText primary={todo.text} />
-			<ListItemSecondaryAction>
-				<IconButton edge="end" onClick={handleDeleteClick}>
-					<Delete />
-				</IconButton>
-			</ListItemSecondaryAction>
-		</ListItem>
+				<ListItemText primary={todo.text} />
+				<ListItemSecondaryAction>
+					<IconButton edge="end" onClick={handleDeleteClick}>
+						<Delete />
+					</IconButton>
+				</ListItemSecondaryAction>
+			</ListItem>
+		</Slide>
 	);
 };
 
