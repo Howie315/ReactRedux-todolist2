@@ -33,15 +33,8 @@ const TodoItem: React.FC<Props> = ({ todo }) => {
 	const [completed, setCompleted] = useState(todo.completed);
 	const [initialLoad, setInitialLoad] = useState(true); // Add this state
 
-	useEffect(() => {
-		// After the initial load, disable the initialLoad state
-		if (initialLoad) {
-			setInitialLoad(false);
-		}
-	}, [initialLoad]);
-
 	const handleToggleClick = async () => {
-		const updatedTodo = { ...todo, completed: !todo.completed };
+		const updatedTodo = { ...todo, completed: todo.completed };
 		try {
 			await dispatch(updateTodo(updatedTodo)); // Use the updateTodo action instead
 			setCompleted(!completed); // Update the completed status
@@ -90,9 +83,10 @@ const TodoItem: React.FC<Props> = ({ todo }) => {
 			>
 				<Checkbox
 					checked={completed}
-					onClick={handleCheckboxClick}
-					onChange={(e) => e.stopPropagation()}
+					onClick={(e) => e.stopPropagation()}
+					onChange={handleToggleClick} // Call handleToggleClick directly here
 				></Checkbox>
+
 				<ListItemText primary={todo.text} />
 				<ListItemSecondaryAction>
 					<IconButton edge="end" onClick={handleDeleteClick}>

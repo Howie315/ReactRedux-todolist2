@@ -1,5 +1,5 @@
 /* TodoItem.css */
-.slide-enter {
+/* .slide-enter {
 	opacity: 0;
 	transform: translateX(-100%);
 }
@@ -19,4 +19,4 @@
 	opacity: 0;
 	transform: translateX(100%);
 	transition: opacity 300ms, transform 300ms;
-}
+} */
