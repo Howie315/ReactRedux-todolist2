@@ -10,11 +10,15 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import "./TodoForm.css";
 const TodoForm: React.FC = () => {
 	const [newTodoText, setNewTodoText] = useState("");
+	const [addingTodo, setAddingTodo] = useState(false); // Add this state
 	const addedItemRef = useRef(null);
 	const dispatch = useAppDispatch();
 
 	const handleAddTodo = async () => {
 		if (newTodoText.trim()) {
+			// Apply the entering animation class
+			setAddingTodo(true);
+
 			const newTodo: Todo = {
 				id: Date.now(),
 				text: newTodoText,
@@ -22,12 +26,15 @@ const TodoForm: React.FC = () => {
 			};
 			try {
 				await dispatch(saveTodo(newTodo));
-				setNewTodoText(""); // Clear the input only if the todo was successfully saved.
-
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				setNewTodoText("");
 			} catch (error) {
 				console.error("Failed to add todo:", error);
 			}
+
+			// Reset the addingTodo state after a short delay
+			setTimeout(() => {
+				setAddingTodo(false);
+			}, 300);
 		}
 	};
 
@@ -51,9 +58,10 @@ const TodoForm: React.FC = () => {
 			>
 				Add Todo
 			</Button>
+
 			<div
 				ref={addedItemRef}
-				className="added-item"
+				className={`added-item ${addingTodo ? "entering" : ""}`}
 				style={{ opacity: 0 }} // Initially hidden
 			>
 				{/* Display the added item here */}

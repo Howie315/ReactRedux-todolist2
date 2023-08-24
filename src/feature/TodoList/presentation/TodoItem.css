@@ -1,16 +1,3 @@
-/* Existing styles... */
-
-/* Entering animation */
-.todo-item.enter {
-	opacity: 0;
-	transform: translateX(-100%);
-	transition: opacity 0.3s, transform 0.3s;
-}
-
-/* Exiting animation... */
-
-/* Slide-out animation... */
-
 /* Slide-in animation */
 @keyframes slideIn {
 	from {
@@ -41,4 +28,20 @@
 
 .todo-item.slide-in-complete {
 	animation: slideInComplete 0.3s forwards;
+}
+
+/* Exiting animation */
+@keyframes exitAnimation {
+	from {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	to {
+		opacity: 0;
+		transform: translateX(100%);
+	}
+}
+
+.todo-item.exit {
+	animation: exitAnimation 0.3s forwards;
 }

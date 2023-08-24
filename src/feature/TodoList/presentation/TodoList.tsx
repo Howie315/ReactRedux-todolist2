@@ -47,18 +47,18 @@ const TodoList: React.FC = () => {
 		void fetchData();
 	}, [dispatch]);
 
-	// if (loadingStates) {
-	// 	return (
-	// 		<Box
-	// 			display="flex"
-	// 			justifyContent="center"
-	// 			alignItems="center"
-	// 			height="100vh"
-	// 		>
-	// 			<CircularProgress />
-	// 		</Box>
-	// 	);
-	// }
+	if (loadingStates) {
+		return (
+			<Box
+				display="flex"
+				justifyContent="center"
+				alignItems="center"
+				height="100vh"
+			>
+				<CircularProgress />
+			</Box>
+		);
+	}
 
 	const onDragEnd = (result: DropResult) => {
 		const source: DraggableLocation | undefined = result.source;

@@ -64,3 +64,22 @@
 	transform: scale(0.9);
 	transition: opacity 300ms, transform 300ms;
 }
+
+@media (max-width: 600px) {
+	.MuiButton-root {
+		display: none;
+	}
+
+	.menu-icon {
+		display: block;
+	}
+	.mobile-hidden {
+		display: none;
+		opacity: 0;
+	}
+}
+
+/* Style for the mobile menu */
+.mobile-menu {
+	z-index: 9999;
+}
