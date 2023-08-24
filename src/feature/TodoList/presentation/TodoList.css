@@ -1,7 +1,8 @@
 .todo-list {
 	display: flex;
-	/* justify-content: center;
-	align-items: center; */
+
+	align-items: center;
+	flex-direction: column; /* Change to column layout */
 }
 
 .todo-list-container {
@@ -43,12 +44,36 @@
 	padding: 10px;
 }
 
-/* .list-container {
-	width: 100%;
-} */
 .incomplete-section {
 	width: 100%;
 }
 .completed-section {
 	width: 100%; /* Make both sections take full width */
+}
+
+.transition-container {
+	display: flex;
+	flex-direction: column;
+	transition: transform 0.3s ease-in-out;
+}
+
+.transition-item {
+	transition: opacity 0.3s ease-in-out;
+}
+
+.transition-item.exiting {
+	opacity: 0;
+}
+
+.transition-container.exiting {
+	transform: translateX(-100%);
+}
+/* TodoList.css */
+.transition-container {
+	overflow: hidden; /* Hide overflow during animation */
+}
+
+.transition-item {
+	width: auto;
+	max-width: 100%; /* Take full width of the container */
 }

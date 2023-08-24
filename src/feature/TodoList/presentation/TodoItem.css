@@ -1,22 +1,44 @@
-/* TodoItem.css */
-/* .slide-enter {
+/* Existing styles... */
+
+/* Entering animation */
+.todo-item.enter {
 	opacity: 0;
 	transform: translateX(-100%);
+	transition: opacity 0.3s, transform 0.3s;
 }
 
-.slide-enter-active {
-	opacity: 1;
-	transform: translateX(0);
-	transition: opacity 300ms, transform 300ms;
+/* Exiting animation... */
+
+/* Slide-out animation... */
+
+/* Slide-in animation */
+@keyframes slideIn {
+	from {
+		opacity: 0;
+		transform: translateX(-100%);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
 }
 
-.slide-exit {
-	opacity: 1;
-	transform: translateX(0);
+.todo-item.slide-in {
+	animation: slideIn 0.3s forwards;
 }
 
-.slide-exit-active {
-	opacity: 0;
-	transform: translateX(100%);
-	transition: opacity 300ms, transform 300ms;
-} */
+/* Slide-in for completed items */
+@keyframes slideInComplete {
+	from {
+		opacity: 0;
+		transform: translateX(100%);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+.todo-item.slide-in-complete {
+	animation: slideInComplete 0.3s forwards;
+}

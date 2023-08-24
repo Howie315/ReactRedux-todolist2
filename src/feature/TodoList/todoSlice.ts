@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "./store";
+import { RootState } from "../../store/store";
 import { Todo } from "./domain/Todo"; // Import the Todo interface
 import axios from "axios";
 import TodoListRepoImpl, { TodoListRepo } from "./domain/TodoListRepo";

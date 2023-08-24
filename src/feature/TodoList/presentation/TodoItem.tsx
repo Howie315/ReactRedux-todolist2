@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React, { useState, useEffect } from "react";
-import { useAppDispatch } from "../store";
+import { useAppDispatch } from "../../../store/store";
 import {
 	toggleTodo,
 	deleteTodo,
@@ -32,6 +32,11 @@ const TodoItem: React.FC<Props> = ({ todo }) => {
 	const [isExiting, setIsExiting] = useState(false);
 	const [completed, setCompleted] = useState(todo.completed);
 	const [initialLoad, setInitialLoad] = useState(true); // Add this state
+	const [isEntering, setIsEntering] = useState(true); // State for fade-in animation
+
+	useEffect(() => {
+		setIsEntering(false); // Disable entering animation after initial rendering
+	}, []);
 
 	const handleToggleClick = async () => {
 		const updatedTodo = { ...todo, completed: todo.completed };
@@ -63,38 +68,26 @@ const TodoItem: React.FC<Props> = ({ todo }) => {
 	};
 
 	return (
-		<Slide
-			direction={isExiting ? "left" : "right"}
-			in={!isExiting}
-			timeout={300}
+		<ListItem
+			disablePadding
+			button
+			onClick={handleToggleClick}
+			className={`todo-item ${isExiting ? "exit" : ""} ${
+				isEntering ? "enter" : ""
+			} ${completed ? "slide-in-complete" : "slide-in"}`} // Apply exit class for animation
 		>
-			<ListItem
-				key={todo.id}
-				disablePadding
-				button
-				onClick={() => {
-					void (async () => {
-						await handleToggleClick();
-					})();
-				}}
-				sx={{
-					textDecoration: completed ? "line-through" : "none",
-				}}
-			>
-				<Checkbox
-					checked={completed}
-					onClick={(e) => e.stopPropagation()}
-					onChange={handleToggleClick} // Call handleToggleClick directly here
-				></Checkbox>
-
-				<ListItemText primary={todo.text} />
-				<ListItemSecondaryAction>
-					<IconButton edge="end" onClick={handleDeleteClick}>
-						<Delete />
-					</IconButton>
-				</ListItemSecondaryAction>
-			</ListItem>
-		</Slide>
+			<Checkbox
+				checked={completed}
+				onClick={(e) => e.stopPropagation()}
+				onChange={handleToggleClick}
+			></Checkbox>
+			<ListItemText primary={todo.text} />
+			<ListItemSecondaryAction>
+				<IconButton edge="end" onClick={handleDeleteClick}>
+					<Delete />
+				</IconButton>
+			</ListItemSecondaryAction>
+		</ListItem>
 	);
 };
 
