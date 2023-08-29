@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import todoReducer from "./todoSlice";
+import todoReducer from "../feature/TodoList/todoSlice";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 // setting up the middleware with default settings for the development environment

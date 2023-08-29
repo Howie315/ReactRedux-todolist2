@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "./store";
+import { RootState } from "../../store/store";
 import { Todo } from "./domain/Todo"; // Import the Todo interface
 import axios from "axios";
 import TodoListRepoImpl, { TodoListRepo } from "./domain/TodoListRepo";
@@ -107,7 +107,7 @@ export const todoSlice = createSlice({
 			})
 
 			.addCase(updateTodo.pending, (state) => {
-				state.isLoading = true;
+				state.isLoading = false;
 			})
 			.addCase(updateTodo.fulfilled, (state, action) => {
 				state.isLoading = false;

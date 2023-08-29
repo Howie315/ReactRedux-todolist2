@@ -29,7 +29,7 @@ class TodoListRepoImpl implements TodoListRepo {
 		}
 
 		try {
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			// await new Promise((resolve) => setTimeout(resolve, 1000));
 			const entityTodos = await db.todos.toArray();
 			const domainTodos = entityTodos.map((entity) => mapToDomainModel(entity));
 
